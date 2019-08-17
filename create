@@ -1,0 +1,91 @@
+import React, { useState, useEffect } from 'react'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import Axios from 'axios';
+import Read from './Read';
+
+function Create() {
+    const [data, setData] = useState([])
+    const [form, setForm] = useState({
+        name: '',
+        role: ''
+    })
+
+    const handleChange = e => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        })
+        console.log(form);
+
+    }
+    useEffect(() => {
+        listItem()
+    }, []);
+
+    const listItem = () => {
+        Axios.get("http://localhost:5000/api/heroes/")
+            .then(result => setData(result.data));
+    }
+    const handleSubmit = e => {
+        e.preventDefault()
+        const obj = {
+            ...form
+        }
+        try {
+            Axios.post('//localhost:5000/api/heroes/', obj)
+                .then(res => console.log(res.data))
+                
+        } catch (error) {
+            console.log(error);
+
+        }
+        
+    }
+    console.log('update');
+
+    return (
+
+        <div>
+            {console.log('render')}
+            <form onSubmit={handleSubmit}>
+                <TextField
+                    id='name'
+                    name='name'
+                    margin='normal'
+                    label='hero name'
+                    onChange={handleChange}
+                />
+                <TextField
+                    id='role'
+                    name='role'
+                    margin='normal'
+                    label='skill'
+                    onChange={handleChange}
+                />
+                <Button variant='contained' type='submit' color='primary'>
+                    Simpan
+                </Button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hero Name</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map(item => (
+                        <tr key={item._id}>
+                            <td>{item.name}</td>
+                            <td>{item.role}</td>
+                        </tr>
+
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}
+
+export default Create
